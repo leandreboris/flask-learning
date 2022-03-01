@@ -17,18 +17,19 @@ marshmallow = Marshmallow(app)
 def find_all_students():
     get_students = Student.query.all()
     student_schema = StudentSchema(many=True)
-    students, error = student_schema.dump(get_students)
-    return make_response(jsonify({"students": students}))
+    students = student_schema.dump(get_students)
+    return make_response(jsonify({"students": students}), 200)
 
 
 @app.route('/students/', methods=['POST'])
 def create_student():
     data = request.get_json()
     student_schema = StudentSchema()
-    student = student_schema.load(data)
-    print(student)
-    result = student_schema.dump(student.create())  
-    print(result)
+    student = student_schema.load(data, session=db.session)  
+    student = Student(name=student.name, field=student.field)
+    db.session.add(student)
+    db.session.commit()
+    result = student_schema.dump(student)  
     return make_response(jsonify({"student": result}),200)
 
 

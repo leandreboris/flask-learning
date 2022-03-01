@@ -1,5 +1,6 @@
-from app import db, marshmallow
+from app import db
 from marshmallow import fields
+from marshmallow_sqlalchemy import SQLAlchemySchema, auto_field
 
 # Models and Schemas
 class Student(db.Model):
@@ -9,13 +10,7 @@ class Student(db.Model):
     field = db.Column( db.String(128))
 
 
-    def create(self):
-        db.session.add(self)
-        db.session.commit()
-        return self
-
     def __init__(self,name, field) :
-        self.id = id
         self.name = name
         self.field = field
     
@@ -25,11 +20,10 @@ class Student(db.Model):
 
 db.create_all()
 
-class StudentSchema(marshmallow.SQLAlchemySchema):
+class StudentSchema(SQLAlchemySchema):
     class Meta:
         model = Student
-        sqla_session = db.session
-
-    id = fields.Number(dump_only=True)
-    name =  fields.String(required=True)
-    field = fields.String(required=True)
+        load_instance = True
+    id = auto_field()
+    name =  auto_field()
+    field = auto_field()

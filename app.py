@@ -1,6 +1,5 @@
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, request
 from flask_sqlalchemy import SQLAlchemy
-from marshmallow import fields
 from flask_marshmallow import Marshmallow
 from models import *
 
@@ -15,11 +14,22 @@ marshmallow = Marshmallow(app)
 
 # Controller
 @app.route('/students/', methods =['GET'])
-def index():
+def find_all_students():
     get_students = Student.query.all()
     student_schema = StudentSchema(many=True)
     students, error = student_schema.dump(get_students)
     return make_response(jsonify({"students": students}))
+
+
+@app.route('/students/', methods=['POST'])
+def create_student():
+    data = request.get_json()
+    student_schema = StudentSchema()
+    student = student_schema.load(data)
+    print(student)
+    result = student_schema.dump(student.create())  
+    print(result)
+    return make_response(jsonify({"student": result}),200)
 
 
 if __name__ == '__main__':

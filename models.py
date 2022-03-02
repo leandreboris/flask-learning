@@ -1,5 +1,4 @@
 from app import db
-from marshmallow import fields
 from marshmallow_sqlalchemy import SQLAlchemySchema, auto_field
 
 # Models and Schemas
@@ -15,8 +14,16 @@ class Student(db.Model):
         self.field = field
     
 
-    def __repr__(self) -> str:
-        return super().__repr__()
+    def __repr__(self):
+        return '<Student ' + str(self.id) + '> : ' + self.name + ' ' + self.field
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 db.create_all()
 
